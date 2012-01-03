@@ -1,0 +1,6 @@
+export(coloc.test)
+exportClasses(coloc)
+exportMethods(eta, theta, chisquare, df, ppp.value, p.value)
+
+
+

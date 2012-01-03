@@ -1,0 +1,7 @@
+2012-01-03  Chris Wallace  <chris.wallace@cimr.cam.ac.uk>
+
+	* v1.05
+	moved to S4 methods
+
+	* v1.04
+	made the means of generating plots more flexible.
