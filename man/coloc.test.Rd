@@ -51,7 +51,7 @@ vars.drop=NULL,...)
 \value{
   a numeric vector with 3 named elements:
   \item{eta.hat}{The estimated slope.}
-  \item{statistic}{The test statistic}
+  \item{chisquare}{The chisquared test statistic}
   \item{n}{The number of snps used in the test.  If eta were known, this
     would be the degrees of freedom of the test. Because
     eta has been replaced by its ML estimate, Plagnol et al suggest we expect the
@@ -74,9 +74,13 @@ vars.drop=NULL,...)
   Chris Wallace.
 }
 \note{
-  For Plagnol et al's original test only, please see an original package by Vincent
-  Plagnol: 
-  \code{QTLMatch v0.8} http://www-gene.cimr.cam.ac.uk/vplagnol/software.shtml
+  Plagnol et al's original test was available in an original package by Vincent
+  Plagnol: \code{QTLMatch v0.8}.  The numerically identical test,
+  extended to allow for more than two SNPs, can be
+  found in this package by looking at the chisquare statistic and the
+  degrees of freedom given by \code{chisquare()} and \code{df()}
+  respectively.  
+  % \url{http://www-gene.cimr.cam.ac.uk/vplagnol/software.shtml}
 }
 
 \examples{

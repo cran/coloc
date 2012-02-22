@@ -1,3 +1,6 @@
+## bootp <- function(b1,b2,s1,s2,eta) {
+## }
+
 bplot <- function(b1,b2,s1,s2,eta,add=NULL,...) {
   c1 <- cbind(b1,sqrt(s1),b1+1.96*sqrt(s1),b1-1.96*sqrt(s1))
   c2 <- cbind(b2,sqrt(s2),b2+1.96*sqrt(s2),b2-1.96*sqrt(s2))

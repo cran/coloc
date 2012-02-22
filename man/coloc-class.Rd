@@ -2,13 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{coloc-class}
-\alias{df,coloc-method}
-\alias{eta,coloc-method}
-\alias{ppp.value,coloc-method}
-\alias{p.value,coloc-method}
-\alias{show,coloc-method}
-\alias{chisquare,coloc-method}
-\alias{theta,coloc-method}
 
 \title{Class \code{"coloc"}}
 \description{
@@ -55,9 +48,9 @@ Objects can be created by calls to the function \code{\link{coloc.test}()}.
   Chris Wallace.
 %%  ~~who you are~~
 }
-\note{
-%%  ~~further notes~~
-}
+% \note{
+% %%  ~~further notes~~
+% }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 

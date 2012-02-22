@@ -1,7 +1,14 @@
+2012-01-05  Chris Wallace  <chris.wallace@cimr.cam.ac.uk>
+
+	* v1.06
+	some tidying.
+
 2012-01-03  Chris Wallace  <chris.wallace@cimr.cam.ac.uk>
 
 	* v1.05
-	moved to S4 methods
+	moved to S4 methods.
+
+2011-12-27  Chris Wallace  <chris.wallace@cimr.cam.ac.uk>
 
 	* v1.04
 	made the means of generating plots more flexible.

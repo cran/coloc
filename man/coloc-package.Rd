@@ -1,13 +1,12 @@
 \name{coloc-package}
 \alias{coloc-package}
-\alias{coloc}
 \docType{package}
 \title{
-Function to do colocalisation tests of two genetic traits
+Colocalisation tests of two genetic traits
 }
 \description{
 Performs the colocalisation tests described in Plagnol et al (2009) and
-Wallace et al (in preparation).
+Wallace et al (in preparation) and draws some plots.
 }
 \details{
 \code{coloc.test()} tests for colocalisation and returns an object of
@@ -22,7 +21,7 @@ Chris Wallace <chris.wallace@cimr.cam.ac.uk>
   type 1 diabetes and RPS26 gene expression on chromosome
   12q13. Biostatistics 10:327-34.
 
-  http://www.ncbi.nlm.nih.gov/pubmed/19039033
+  \url{http://www.ncbi.nlm.nih.gov/pubmed/19039033}
 
   Wallace et al (in preparation).
 }

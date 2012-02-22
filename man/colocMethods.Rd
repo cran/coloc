@@ -5,14 +5,21 @@
 \alias{ppp.value}
 \alias{p.value}
 \alias{chisquare}
+\alias{df,coloc-method}
+\alias{n,coloc-method}
+\alias{eta,coloc-method}
+\alias{ppp.value,coloc-method}
+\alias{p.value,coloc-method}
+\alias{show,coloc-method}
+\alias{chisquare,coloc-method}
+\alias{theta,coloc-method}
 
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Functions to extract information from a \code{coloc} object
 }
 \usage{
-eta(object)
-theta(object)
+\S4method{eta}{coloc}(object)
 }
 \description{
   Extract information from a \code{coloc} object.
