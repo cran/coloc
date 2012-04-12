@@ -35,7 +35,7 @@ vars.drop=NULL,...)
 
   \code{x} is generally a sequence of \code{theta} and \code{eta}, with
   \code{y} selected from 
-  \code{theta.post}, the posterior density of theta, 
+  \code{post.theta}, the posterior density of theta, 
   \code{chisq}, the chi-square values
   of the test, and \code{lhood}, the likelihood function.}
 \item{vars.drop}{Character vector naming additional variables in either
@@ -106,7 +106,7 @@ vars.drop=NULL,...)
   par(mfrow=c(2,2))
   coloc.test(lm1,lm2,plot.coeff=TRUE,
              plots.extra=list(x=c("eta","theta"),
-                              y=c("lhood","theta.post")))
+                              y=c("lhood","post.theta")))
 
 }
 %% ~Make other sections like Warning with \section{Warning }{....} ~

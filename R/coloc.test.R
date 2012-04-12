@@ -1,6 +1,4 @@
-library(MASS)
 ### coloc class: simple class to hold results of coloc.test()
-
 validColoc <- function(object) {
   if(length(object@result) != 4 ||
      !all(c("eta.hat","chisquare","n","ppp") %in% names(object@result))) {
@@ -56,6 +54,7 @@ setMethod("p.value","coloc",function(object)
           pchisq(object@result["chisquare"],df=object@result["n"]-1,lower=FALSE))
 
 
+### function to do colocalisation testing
 
 coloc.test <- function(X,Y,k=1,plot.coeff=TRUE,plots.extra=NULL,
                        vars.drop=NULL,...) {
@@ -129,7 +128,7 @@ coloc.test <- function(X,Y,k=1,plot.coeff=TRUE,plots.extra=NULL,
   post <- function(theta) { LV(theta) / LV.int$value }
 
   ##  posterior predictive p value
-  pv <- function(theta) { pchisq(chisq(theta,b1,b2),df=p,lower=FALSE) }
+  pv <- function(theta) { pchisq(chisq(theta,b1,b2),df=p,lower.tail=FALSE) }
   pval <- Vectorize(pv,"theta")
   toint <- function(theta) { pval(theta) * post(theta) }
   ppp <- integrate(toint,lower=theta.min,upper=theta.max)

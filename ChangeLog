@@ -1,3 +1,8 @@
+2012-04-12  Chris Wallace  <chris.wallace@cimr.cam.ac.uk>
+
+	* v1.08
+	fixed error in documentation, added MASS to Depends.
+	
 2012-01-05  Chris Wallace  <chris.wallace@cimr.cam.ac.uk>
 
 	* v1.06
