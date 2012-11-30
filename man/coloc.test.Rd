@@ -6,13 +6,18 @@
 Function to do colocalisation tests of two traits
 }
 \description{
-Performs the colocalisation tests described in Plagnol et al (2009) and Wallace et al, in preparation.
+Performs the colocalisation tests described in Plagnol et al (2009) and
+Wallace et al (2012).
 }
 \usage{
 coloc.test(X, Y, k=1,
 plot.coeff=TRUE,
 plots.extra=NULL,
-vars.drop=NULL,...)
+vars.drop=NULL,
+bayes.ppp=TRUE,
+bayes.ci=TRUE,
+n.ci=1001,
+level.ci=0.95)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,7 +37,7 @@ vars.drop=NULL,...)
   list with 2 named elements, x and y, equal length character vectors
   containing the names of the quantities to be plotted on the x and y
   axes.
-
+  
   \code{x} is generally a sequence of \code{theta} and \code{eta}, with
   \code{y} selected from 
   \code{post.theta}, the posterior density of theta, 
@@ -42,11 +47,28 @@ vars.drop=NULL,...)
   regression which are not  SNPs and should not be used in the
   colocalisation test.  They should  appear in
   \code{c(names(coefficients(X)),names(coefficients(Y)))}}
-\item{...}{Additional arguments passed to plotting functions}
+\item{bayes.ppp}{Logical, indicating whether to calculate the Bayesian
+  posterior predictive p value.  This can add a little time as it
+  requires numerical integration, so can be set to FALSE to save time in
+  simulations, for example.}
+\item{bayes.ci}{Logical, indicating whether to calculate the Bayesian
+  credible interval for eta.  This can add some time as it requires a
+  numerical search to find the highest posterior density region.  Again,
+  it can be set to FALSE to save time in simulations.}
+\item{level.ci, n.ci}{\code{level.ci} denotes the required level of the credible
+  interval for \code{eta}.  This is calculated numerically by
+  approximating the posterior distribution at \code{n.ci} distinct values.}
 }
 \details{
-  Please see Wallace et al, in preparation, for more details of the
-  model and test.
+  This is a test for proportionality of regression coefficients from two
+  independent regressions.  Analysis can either be based on a profile
+  likelihood approach, where the proportionality coefficient,
+  \code{eta}, is replaced by its maximum likelihood value, and inference
+  is based on a chisquare test (\code{p.value}), or taking a hybrid-Bayesian
+  approach and integrating the p value over the posterior distribution
+  of \code{eta}, which gives a posterior predictive p value.  The
+  Bayesian approach can also be used to give a credible interval for
+  \code{eta}.  See the references below for further details.
 }
 \value{
   a numeric vector with 3 named elements:
@@ -61,28 +83,30 @@ vars.drop=NULL,...)
   \item{ppp}{The posterior predictive p value}
 }
 \references{
+  Wallace et al (2012).
+  Statistical colocalisation of monocyte gene expression and genetic risk variants for type 1 diabetes.
+  Hum Mol Genet 21:2815-2824.
+  \url{http://europepmc.org/abstract/MED/22403184}
+
   Plagnol et al (2009).
   Statistical independence of the colocalized association signals for
   type 1 diabetes and RPS26 gene expression on chromosome
   12q13. Biostatistics
   10:327-34. \url{http://www.ncbi.nlm.nih.gov/pubmed/19039033}
-
-  Wallace et al (in preparation).
-%% ~put references to the literature/web site here ~
 }
 \author{
   Chris Wallace.
 }
 \note{
-  Plagnol et al's original test was available in an original package by Vincent
-  Plagnol: \code{QTLMatch v0.8}.  The numerically identical test,
+  Plagnol et al's original test was available in his R package
+  \code{QTLMatch v0.8} which now appears unavailable.  The numerically
+  identical test, 
   extended to allow for more than two SNPs, can be
   found in this package by looking at the chisquare statistic and the
   degrees of freedom given by \code{chisquare()} and \code{df()}
   respectively.  
   % \url{http://www-gene.cimr.cam.ac.uk/vplagnol/software.shtml}
 }
-
 \examples{
   ## simulate covariate matrix (X) and continuous response vector (Y)
   ## for two populations/triats Y1 and Y2 depend equally on f1 and f2

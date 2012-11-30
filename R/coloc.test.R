@@ -4,13 +4,15 @@ validColoc <- function(object) {
      !all(c("eta.hat","chisquare","n","ppp") %in% names(object@result))) {
     return("result slot in coloc objects should be a named numeric vector with 4 elements: eta.hat, chisquare, n, ppp, p.boot")
   }
+  ## if(length(object@u) != nrow(object@V))
+  ##   return("dim of V should equal length of u")
 }
 setClass("coloc",
-         representation(result="numeric"),         
+         representation(result="numeric", credible.interval="list"),
          validity=validColoc)
 
 show.coloc <- function(object) {
-  res <- c(object@result,  p.value=p.value(object))
+  res <- c(object@result,  p.value=p.value(object), ci(object))
   print(res)
 }
 setMethod("show","coloc",show.coloc)
@@ -31,7 +33,7 @@ setMethod("show","coloc",show.coloc)
 ##   object@result["ppp"]
 ## }
 ## p.value <- function(object) {
-##   pchisq(object@result["chisquare"],df=object@result["df"],lower=FALSE)
+##   pchisq(object@result["chisquare"],df=object@result["df"],lower.tail=FALSE)
 ## }
 setGeneric("eta",function(object) standardGeneric("eta"))
 setMethod("eta","coloc",function(object) object@result["eta.hat"])
@@ -43,6 +45,8 @@ setMethod("theta","coloc",function(object) {
           })
 setGeneric("chisquare",function(object) standardGeneric("chisquare"))
 setMethod("chisquare","coloc",function(object) object@result["chisquare"])
+setGeneric("ci",function(object) standardGeneric("ci"))
+setMethod("ci","coloc",function(object) object@credible.interval[c("mode","lower","upper","level.observed.value","interior")])
 setGeneric("df",function(object) standardGeneric("df"))
 setMethod("df","coloc",function(object) object@result["n"]-1)
 setGeneric("n",function(object) standardGeneric("n"))
@@ -51,13 +55,13 @@ setGeneric("ppp.value",function(object) standardGeneric("ppp.value"))
 setMethod("ppp.value","coloc",function(object) object@result["ppp"])
 setGeneric("p.value",function(object) standardGeneric("p.value"))
 setMethod("p.value","coloc",function(object)
-          pchisq(object@result["chisquare"],df=object@result["n"]-1,lower=FALSE))
+          pchisq(object@result["chisquare"],df=object@result["n"]-1,lower.tail=FALSE))
 
 
 ### function to do colocalisation testing
 
 coloc.test <- function(X,Y,k=1,plot.coeff=TRUE,plots.extra=NULL,
-                       vars.drop=NULL,...) {
+                       vars.drop=NULL, bayes.ppp=TRUE, bayes.ci=TRUE,n.ci=1001,level.ci=0.95) {
   ## X and Y are glm objects, fitted to the same snps, with different outcome variables
   ## return values are
   ## return(c(eta.hat=eta.hat,chisq=X2,ppp=ppp$value))
@@ -75,7 +79,7 @@ coloc.test <- function(X,Y,k=1,plot.coeff=TRUE,plots.extra=NULL,
     cat("Warning:",length(snps.dropX),"variables dropped from regression X:\n\t",snps.dropX,"\n")
   if(length(snps.dropY))
     cat("Warning:",length(snps.dropY),"variables dropped from regression Y:\n\t",snps.dropY,"\n")
-  
+
   if(length(snps)<=1) { # 1 common coef => equal already
     cat("Only 1 factor,",snps," in common.  Skipping\n")
     return(c(NA,NA,NA))
@@ -108,90 +112,100 @@ coloc.test <- function(X,Y,k=1,plot.coeff=TRUE,plots.extra=NULL,
   fm <- findmin(b1,b2)
   theta.hat <- fm$minimum; eta.hat=tan(theta.hat)
   X2 <- fm$objective[1,1]
-  
-  ## cauchy prior for theta
-  prior <- function(theta) { tt <- tan(theta);
-                             k*(1+tt^2) / (2*pi*(1 + k^2 * tt^2)) }
-  ## posterior for theta
-  p <- length(b1)
-  const <- ( sqrt(2*pi)^p * det(V1) * det(V2) )^(-1)
-  M <- function(theta) { solve(cos(theta)^2 * S1 + sin(theta)^2 * S2) }
-  mu <- function(theta) { t( (cos(theta) * t(b1) %*% S1 +
-                              sin(theta) * t(b2) %*% S2) %*% M(theta) ) }
+
+  if(bayes.ppp || bayes.ci) {
+    ## cauchy prior for theta
+    prior <- function(theta) { tt <- tan(theta);
+                               k*(1+tt^2) / (2*pi*(1 + k^2 * tt^2)) }
+    ## posterior for theta
+    p <- length(b1)
+    const <- ( sqrt(2*pi)^p * det(V1) * det(V2) )^(-1)
+    M <- function(theta) { solve(cos(theta)^2 * S1 + sin(theta)^2 * S2) }
+    mu <- function(theta) { t( (cos(theta) * t(b1) %*% S1 +
+                                sin(theta) * t(b2) %*% S2) %*% M(theta) ) }
   L <- function(theta) {
     const * prior(theta) * det(M(theta))^(-0.5) *
       exp( -0.5 * (t(b1) %*% S1 %*% b1 + t(b2) %*% S2 %*% b2 -
-                   t(mu(theta)) %*% solve(M(theta)) %*% mu(theta)) ) 
+                   t(mu(theta)) %*% solve(M(theta)) %*% mu(theta)) )
   }
   LV <- Vectorize(L,"theta")
   LV.int <- integrate(LV,lower=0,upper=pi)
   post <- function(theta) { LV(theta) / LV.int$value }
+  }
 
+  if(bayes.ppp) {
   ##  posterior predictive p value
   pv <- function(theta) { pchisq(chisq(theta,b1,b2),df=p,lower.tail=FALSE) }
   pval <- Vectorize(pv,"theta")
   toint <- function(theta) { pval(theta) * post(theta) }
   ppp <- integrate(toint,lower=theta.min,upper=theta.max)
+} else {
+  ppp <- NA
+}
 
-################################################################################    
+  if(bayes.ci) {
+  ## credible interval
+  
+  ## minimum, so that we can reset theta.min, theta.max and centre on the mode
+  minimum <- optimize(post, interval=c(theta.min, theta.max))
+  t.min <- minimum$minimum
+  t.max <- minimum$minimum + pi
+  ## mode, within that range
+  mode <- optimize(post, interval=c(t.min, t.max), maximum=TRUE)
+
+  pvec <- seq(t.min, t.max, length=n.ci)
+  pval <- post(pvec)
+  pval <- pval/sum(pval)
+
+  ## search
+  centre <- which.max(pval)
+  v <- pval[centre-1]
+  l <- which.min(abs(pval[1:(centre+1)] - v))
+  u <- which.min(abs(pval[(centre+1):n.ci] - v)) + centre
+  while(sum(pval[l:u])<level.ci) { # go down in twenties
+    cat(".")
+    v <- max(pval[l-20], pval[u+20])
+    l <- which.min(abs(pval[1:(centre+1)] - v))
+    u <- which.min(abs(pval[(centre+1):n.ci] - v)) + centre
+  }
+  while(sum(pval[l:u])>level.ci) { # go up in ones
+    cat(".")
+    v <- min(pval[l+1], pval[u-1])
+    l <- which.min(abs(pval[1:(centre+1)] - v))
+    u <- which.min(abs(pval[(centre+1):n.ci] - v)) + centre
+  }
+  ci <- c(mode=tan(mode$maximum), lower=tan(pvec[l]), upper=tan(pvec[u]), level=level.ci, level.observed=integrate(post, lower=pvec[l], upper=pvec[u]), interior=pvec[l] %/% pi == pvec[u] %/% pi)
+} else {
+  ci <- NA
+}
+   
+################################################################################
   ## plots
   if(plot.coeff) {
-    bplot(b1,b2,diag(V1),diag(V2),eta=eta.hat,
+    coeff.plot(b1,b2,diag(V1),diag(V2),eta=eta.hat,
           main="Coefficients",
-          sub=paste("ppp =",format.pval(ppp$value)),xlab=expression(b[1]),ylab=expression(b[2]))
+#         sub=paste("ppp =",format.pval(ppp$value,digits=2),"p =",format.pval(pchisq(X2,df=length(snps)-1,lower.tail=FALSE),digits=2)),
+          xlab=expression(b[1]),ylab=expression(b[2]))
   }
-  
+
   x <- seq(theta.min,theta.max,length=1001)
-  
+
   if(!is.null(plots.extra)) {
     plot.data <- list(theta=x,
                       eta=tan(x),
                       chisq=chisqV(x,b1,b2),
                       post.theta=post(x),
                       lhood=chisqV(x,b1,b2))
-    labels <- list(theta="theta",
-                   eta="eta",
-                   chisq="chisquare",
-                   post.theta="posterior for theta",
-                   lhood="-2 log likelihood")
-                   
-    if(!is.list(plots.extra) || length(plots.extra)!=2 ||
-       !("x" %in% names(plots.extra)) || !("y" %in% names(plots.extra)) ||
-#       length(plots.extra$x)!=length(plots.extra$y) ||
-       !all(plots.extra$x %in% names(plot.data)) ||
-       !all(plots.extra$y %in% names(plot.data))) {
-      warning("plots.extra must be of the format list(x=..., y=...) where x and y are equal length character vectors with elements from theta, eta, lhood, chisq, theta.post.  Skipping plots.extra.")
-    } else {
-      if(length(plots.extra$y)>length(plots.extra$x)) {
-        plots.extra$x <- rep(plots.extra$x,length=length(plots.extra$y))
-      }
-      if(length(plots.extra$x)>length(plots.extra$y)) {
-        plots.extra$y <- rep(plots.extra$y,length=length(plots.extra$x))
-      }
-        
-      for(i in 1:length(plots.extra$x)) {        
-      plot(plot.data[[ plots.extra$x[i] ]],
-           plot.data[[ plots.extra$y[i] ]],
-           type="l",axes=FALSE,
-           xlab=labels[[ plots.extra$x[i] ]],ylab=labels[[ plots.extra$y[i] ]],
-           main=paste(labels[[ plots.extra$y[i] ]],"vs",labels[[ plots.extra$x[i] ]]),...)
-      if(plots.extra$x[i]=="theta") {
-        axis(1,at=seq(theta.min,theta.max,length=5),
-             labels=c("0",expression(pi / 4),expression(pi / 2), expression(3 * pi / 4), expression(pi)))
-      } else {
-        axis(1)
-      }
-      axis(2); box()
-      if(plots.extra$x[i]=="theta") 
-        abline(v=theta.hat,col="blue",lty=3)
-      if(plots.extra$x[i]=="eta") 
-        abline(v=eta.hat,col="blue",lty=3)
-      
-    }
-    }
-    }
+    extra.plot(plot.data, plots.extra, theta.hat=theta.hat, eta.hat=eta.hat)   
+  }
 
   ## return
-  new("coloc",
-      result=c(eta.hat=eta.hat,chisquare=X2,n=length(snps),ppp=ppp$value))  
+  return(new("coloc",
+             result=c(eta.hat=eta.hat,chisquare=X2,n=length(snps),
+               ppp=ppp$value),
+             credible.interval=ci))
+             ## u=d(theta.hat, b1, b2),
+             ## V=Vstar(theta.hat),
+             ## post=post(seq(theta.min,theta.max,0.01))))
 }
+

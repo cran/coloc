@@ -1,9 +1,10 @@
-c452ea1a67852a5f452edcca489e592d *ChangeLog
-d25569945716982972932e2457f6c01a *DESCRIPTION
+d3eee8251802d0ca04105ce85b735a3b *ChangeLog
+87384a38e4da72d8f2b3dc3c47729ed0 *DESCRIPTION
 c5cca388d88c5e5026814e875df8d564 *NAMESPACE
-8ac2896e6340c8d848afeb6030be7405 *R/coloc.test.R
-af71fbd91c5f94eb8bf648e113ad8d46 *R/private.R
-f4970f2e6ad4d7c3509b1502ddccef9f *man/coloc-class.Rd
+8d26043e5e9d1d0fcd6f1f18b1526900 *R/coloc.combine.R
+028e1eef87fde06650f6b7339ada4728 *R/coloc.test.R
+36f7cbe4b4df0dada4284ae27f69a93b *R/plots.R
+dca40e1342359774a07cbb21e69057ef *man/coloc-class.Rd
 fe476602480e2b829d9ebddd3eced466 *man/coloc-package.Rd
-41e0f87854c67b6aef1a755909599a1b *man/coloc.test.Rd
-ebbdc053eded9cad638fef9a2ae0eff4 *man/colocMethods.Rd
+e5acc4d0f0dc5e2a2dbace6c1987fdc2 *man/coloc.test.Rd
+bcbea3ec0f3a07446e17ca9fea31613b *man/colocMethods.Rd

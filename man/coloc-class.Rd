@@ -17,9 +17,11 @@ Objects can be created by calls to the function \code{\link{coloc.test}()}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{result}:}{Named numeric vector containing maximum
+    \item{\code{result}:}{named numeric vector containing maximum
       likelihood estimate and associated chisquare and posterior
-      predictive p values}.
+      predictive p values}
+    \item{\code{credible.interval}:}{list of named elements describing
+      the credible interval for \code{eta}}
   }
 }
 \section{Methods}{
@@ -30,34 +32,30 @@ Objects can be created by calls to the function \code{\link{coloc.test}()}.
   Wallace et al (in preparation). }
     \item{df}{\code{signature(object = "coloc")}: returns the associated degrees of freedom. }
     \item{p.value}{\code{signature(object = "coloc")}: returns the associated p value. }
-    \item{ppp.value}{\code{signature(object = "coloc")}: returns the posterior predicted p value. }
+    \item{ppp.value}{\code{signature(object = "coloc")}: returns the
+      posterior predicted p value, or \code{NA} if not calculated. }
+    \item{ci}{\code{signature(object = "coloc")}: returns the Bayesian
+      credible interval for eta, or \code{NA} if not calculated. }
     \item{show}{\code{signature(object = "coloc")}: print a coloc object. }
   }
 }
 \references{
+  Wallace et al (2012).
+  Statistical colocalisation of monocyte gene expression and genetic risk variants for type 1 diabetes.
+  Hum Mol Genet 21:2815-2824.
+  \url{http://europepmc.org/abstract/MED/22403184}
+
   Plagnol et al (2009).
   Statistical independence of the colocalized association signals for
   type 1 diabetes and RPS26 gene expression on chromosome
   12q13. Biostatistics
   10:327-34. \url{http://www.ncbi.nlm.nih.gov/pubmed/19039033}
-
-  Wallace et al (in preparation).
-%%  ~~put references to the literature/web site here~~
 }
 \author{
   Chris Wallace.
-%%  ~~who you are~~
 }
-% \note{
-% %%  ~~further notes~~
-% }
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
 \seealso{
   \code{\link{coloc.test}}
-%%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-%%  ~~or \code{\linkS4class{CLASSNAME}} for links to other classes ~~~
 }
 \examples{
 showClass("coloc")
