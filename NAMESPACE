@@ -1,3 +1,4 @@
+export(coloc.bma)
 export(coloc.test)
-exportClasses(coloc)
-exportMethods(eta, theta, chisquare, df, ppp.value, p.value)
+export(pcs.model)
+export(pcs.prepare)
