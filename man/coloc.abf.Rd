@@ -1,6 +1,6 @@
 \name{coloc.abf}
 \alias{coloc.abf}
-\title{Fully Bayesian colocalisation analysis}
+\title{Fully Bayesian colocalisation analysis using p values}
 \usage{
   coloc.abf(pvalues.dataset1, pvalues.dataset2, MAF,
     N.dataset1, N.dataset2, type.dataset1 = "quant",
@@ -54,15 +54,19 @@
   Bayesian colocalisation analysis using summary p values
 }
 \details{
-  This function takes a data frame obtained by merging
-  p-values for both eQTL and biomarker dataset and returns
-  a list with [1] summary df [2] original df with
-  additional ABF and other values Using MAF from eQTL
-  dataset (column named "MAF.df2") "pvalues.df1" and
-  "pvalues.df2" : names of the colums with p-values
-  N.dataset1 and N.dataset2 number of indviduals used to
-  get the p-values in each dataset sd.prior = standard
-  deviation of prior
+  This function makes a data frame obtained by merging
+  p-values for two traits over the same set of SNPs and
+  calculates posterior probabilities of different causal
+  variant configurations under the assumption of a single
+  causal variant for each trait.
+
+  It uses an approximation to calculate Bayes factors for
+  association at each SNP that depends on the SNP's MAF and
+  ignores any uncertainty in imputation, and is therefore
+  better suited to well imputed SNPs.
+  \code{\link{coloc.abf.imputed}} is preferred when
+  regression coefficients and their standard errors are
+  available.
 }
 \author{
   Claudia Giambartolomei, Chris Wallace
