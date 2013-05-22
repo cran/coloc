@@ -1,8 +1,8 @@
-\name{approx.bf}
-\alias{approx.bf}
-\title{Internal function, approx.bf}
+\name{approx.bf.p}
+\alias{approx.bf.p}
+\title{Internal function, approx.bf.p}
 \usage{
-  approx.bf(p, f, type, N, s, suffix)
+  approx.bf.p(p, f, type, N, s, suffix = NULL)
 }
 \arguments{
   \item{p}{p value}
@@ -23,7 +23,7 @@
   data.frame containing lABF and intermediate calculations
 }
 \description{
-  Internal function, approx.bf
+  Internal function, approx.bf.p
 }
 \details{
   Calculate approximate Bayes Factors

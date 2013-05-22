@@ -56,11 +56,13 @@ structure.}
   requires numerical integration, so can be set to FALSE to
   save time in simulations, for example.}
 
-  \item{bayes.factor}{Either a numeric vector, giving
-  single value(s) of \code{eta} or a list of numeric
-  vectors, each of length two and specifying ranges of eta
-  which should be compared to each other.  Thus, the vector
-  or list needs to have length at least two.}
+  \item{bayes.factor}{Calculate Bayes Factors to compare
+  specific values of eta.  \code{bayes.factor} should
+  either a numeric vector, giving single value(s) of
+  \code{eta} or a list of numeric vectors, each of length
+  two and specifying ranges of eta which should be compared
+  to each other.  Thus, the vector or list needs to have
+  length at least two.}
 
   \item{plot.coeff}{\code{TRUE} if you want to generate a
   plot showing the coefficients from the two regressions

@@ -52,10 +52,10 @@ logdiff <- function(x,y) {
 }
 
 
-##' Internal function, approx.bf
+##' Internal function, approx.bf.p
 ##'
 ##' Calculate approximate Bayes Factors
-##' @title Internal function, approx.bf
+##' @title Internal function, approx.bf.p
 ##' @param p p value
 ##' @param f MAF
 ##' @param type "quant" or "cc"
@@ -64,7 +64,7 @@ logdiff <- function(x,y) {
 ##' @param suffix suffix to append to column names of returned data.frame
 ##' @return data.frame containing lABF and intermediate calculations
 ##' @author Claudia Giambartolomei, Chris Wallace
-approx.bf <- function(p,f,type, N, s, suffix) {
+approx.bf.p <- function(p,f,type, N, s, suffix=NULL) {
   if(type=="quant") {
     sd.prior <- 0.15
     V <- Var.data(f, N)
@@ -78,21 +78,23 @@ approx.bf <- function(p,f,type, N, s, suffix) {
   ## Approximate BF  # I want ln scale to compare in log natural scale with LR diff
   lABF = 0.5 * (log(1-r) + (r * z^2))
   ret <- data.frame(V,z,r,lABF)
-  colnames(ret) <- paste(colnames(ret), suffix, sep=".")
+  if(!is.null(suffix))
+    colnames(ret) <- paste(colnames(ret), suffix, sep=".")
   return(ret)  
 }
 
-##' Internal function, approx.bf.imputed
+##' Internal function, approx.bf.estimates
 ##'
 ##' Calculate approximate Bayes Factors using supplied variance of the regression coefficients
-##' @title Internal function, approx.bf.imputed
+##' @title Internal function, approx.bf.estimates
 ##' @param z normal deviate associated with regression coefficient and its variance
 ##' @param V its variance
-##' @inheritParams approx.bf
+##' @param sdY standard deviation of the trait. If not supplied, will be estimated.
+##' @inheritParams approx.bf.p
 ##' @return data.frame containing lABF and intermediate calculations
 ##' @author Vincent Plagnol, Chris Wallace
-approx.bf.imputed <- function (z, V, type, suffix=NULL) {
-  if (type == "quant") {sd.prior <- 0.15} else {sd.prior <- 0.2}
+approx.bf.estimates <- function (z, V, type, suffix=NULL, sdY=1) {
+  sd.prior <- if (type == "quant") { 0.15*sdY } else { 0.2 }
   r <- sd.prior^2/(sd.prior^2 + V)
   lABF = 0.5 * (log(1 - r) + (r * z^2))
   ret <- data.frame(V, z, r, lABF)
@@ -126,6 +128,25 @@ combine.abf <- function(l1, l2, p1, p2, p12) {
   print(paste("PP abf for shared variant: ", signif(pp.abf["PP.H4.abf"],3)*100 , '%', sep=''))
   return(pp.abf)
 }
+##' Estimate trait standard deviation given vectors of variance of coefficients,  MAF and sample size
+##'
+##' Estimate is based on var(beta-hat) = var(Y) / (n * var(X))
+##' var(X) = 2*maf*(1-maf)
+##' so we can estimate var(Y) by regressing n*var(X) against 1/var(beta)
+##' 
+##' @title Estimate trait variance, internal function
+##' @param vbeta vector of variance of coefficients
+##' @param maf vector of MAF (same length as vbeta)
+##' @param n sample size
+##' @return estimated standard deviation of Y
+##' 
+##' @author Chris Wallace
+sdY.est <- function(vbeta, maf, n) {
+  oneover <- 1/vbeta
+  nvx <- 2 * n * maf * (1-maf)
+  m <- lm(nvx ~ oneover)
+  return(sqrt(coef(m)[['oneover']]))
+}
 
 ##' Internal function, process each dataset list for coloc.abf
 ##'
@@ -135,22 +156,30 @@ combine.abf <- function(l1, l2, p1, p2, p12) {
 ##' @return data.frame with log(abf) or log(bf)
 ##' @author Chris Wallace
 process.dataset <- function(d, suffix) {
+  message('Processing dataset')
+
   nd <- names(d)
-  if("beta" %in% nd & "varbeta" %in% nd & "type" %in% nd) {
+  if (! 'type' %in% nd)
+    stop('The variable type must be set, otherwise the Bayes factors cannot be computed')
+
+  if("beta" %in% nd && "varbeta" %in% nd && ("MAF" %in% nd || "sdY" %in% nd)) {
     if(length(d$beta) != length(d$varbeta))
       stop("Length of the beta vectors and variance vectors must match")
     if(!("snp" %in% nd))
       d$snp <- sprintf("SNP.%s",1:length(d$beta))
-    df <- data.frame(z = d$beta/sqrt(d$varbeta),
-                     V = d$varbeta,
-                     snp=as.character(d$snp))
-    colnames(df)[-3] <- paste(colnames(df)[-3], suffix, sep=".")
-    abf <- approx.bf.imputed(z=df$z, V=df$V, type=d$type, suffix=suffix)
-    df <- cbind(df, abf)
+    if(length(d$snp) != length(d$beta))
+      stop("Length of snp names and beta vectors must match")
+ 
+    if(d$type == 'quant' & !('sdY' %in% nd)) 
+      d$sdY <- sdY.est(d$varbeta, d$MAF, d$N)
+    
+    df <- approx.bf.estimates(z=d$beta/sqrt(d$varbeta),
+                              V=d$varbeta, type=d$type, suffix=suffix, sdY=d$sdY)
+    df$snp <- as.character(d$snp)
     return(df)
   }
 
-  if("pvalues" %in% nd & "MAF" %in% nd & "N" %in% nd & "type" %in% nd) {
+  if("pvalues" %in% nd & "MAF" %in% nd & "N" %in% nd) {
     if (length(d$pvalues) != length(d$MAF))
       stop('Length of the P-value vectors and MAF vector must match')
     if(d$type=="cc" & !("s" %in% nd))
@@ -160,9 +189,9 @@ process.dataset <- function(d, suffix) {
     df <- data.frame(pvalues = d$pvalues,
                      MAF = d$MAF,
                      snp=as.character(d$snp))    
-     colnames(df)[-3] <- paste(colnames(df)[-3], suffix, sep=".")
-   df <- subset(df, df$MAF>0 & df$pvalues>0) # all p values and MAF > 0
-    abf <- approx.bf(p=df$pvalues, f=df$MAF, type=d$type, N=d$N, s=d$s, suffix=suffix)
+    colnames(df)[-3] <- paste(colnames(df)[-3], suffix, sep=".")
+    df <- subset(df, df$MAF>0 & df$pvalues>0) # all p values and MAF > 0
+    abf <- approx.bf.p(p=df$pvalues, f=df$MAF, type=d$type, N=d$N, s=d$s, suffix=suffix)
     df <- cbind(df, abf)
     return(df)  
   }
@@ -212,13 +241,13 @@ process.dataset <- function(d, suffix) {
 ##' separately.
 ##' @param dataset2 as above, for dataset 2
 ##' @param MAF Common minor allele frequency vector to be used for both dataset1 and dataset2
-##' @param p1 prior probability a SNP is associated with trait 1
-##' @param p2 prior probability a SNP is associated with trait 2
-##' @param p12 prior probability a SNP is associated with both traits
+##' @param p1 prior probability a SNP is associated with trait 1, default 1e-4
+##' @param p2 prior probability a SNP is associated with trait 2, default 1e-4
+##' @param p12 prior probability a SNP is associated with both traits, default 1e-5
 ##' @return a list of two \code{data.frame}s:
 ##' \itemize{
-##' \item results is a vector giving the number of SNPs analysed, and the posterior probabilities of H0 (no causal variant), H1 (causal variant for trait 1 only), H2 (causal variant for trait 2 only), H3 (two distinct causal variants) and H4 (one common causal variant)
-##' \item merged.df is an annotated version of the input \code{data.frame}
+##' \item summary is a vector giving the number of SNPs analysed, and the posterior probabilities of H0 (no causal variant), H1 (causal variant for trait 1 only), H2 (causal variant for trait 2 only), H3 (two distinct causal variants) and H4 (one common causal variant)
+##' \item results is an annotated version of the input data containing log Approximate Bayes Factors and intermediate calculations, and the posterior probability SNP.PP.H4 of the SNP being causal for the shared signal
 ##' }
 ##' @author Claudia Giambartolomei, Chris Wallace
 ##' @export
@@ -235,19 +264,23 @@ coloc.abf <- function(dataset1, dataset2, MAF=NULL,
   df1 <- process.dataset(d=dataset1, suffix="df1")
   df2 <- process.dataset(d=dataset2, suffix="df2")
   merged.df <- merge(df1,df2)
-  
-  if(!nrow(merged.df))
+
+   if(!nrow(merged.df))
     stop("dataset1 and dataset2 should contain the same snps in the same order, or should contain snp names through which the common snps can be identified")
 
   merged.df$internal.sum.lABF <- with(merged.df, lABF.df1 + lABF.df2)
+  ## add SNP.PP.H4 - post prob that each SNP is THE causal variant for a shared signal
+  my.denom.log.abf <- logsum(merged.df$internal.sum.lABF)
+  merged.df$SNP.PP.H4 <- exp(merged.df$internal.sum.lABF - my.denom.log.abf)
   
+ 
 ############################## 
 
   pp.abf <- combine.abf(merged.df$lABF.df1, merged.df$lABF.df2, p1, p2, p12)  
   common.snps <- nrow(merged.df)
   results <- c(nsnps=common.snps, pp.abf)
   
-  output<-list(results, merged.df)
+  output<-list(summary=results, results=merged.df)
   return(output)
 }
 

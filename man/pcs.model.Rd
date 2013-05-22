@@ -1,6 +1,6 @@
 \name{pcs.model}
 \alias{pcs.model}
-\title{Functions to prepare principle component models for colocalisation testing}
+\title{pcs.model}
 \usage{
   pcs.model(object, group, Y, threshold = 0.8,
     family = if (all(Y \%in\% c(0, 1))) {     "binomial"
@@ -26,11 +26,14 @@
   \code{Y} contains only 0s and 1s, "gaussian" otherwise.}
 }
 \value{
-  \code{pcs.prepare} returns a \code{colocPCs} object.
-
+  \code{pcs.prepare} returns a \code{colocPCs} object,
   \code{pcs.model} returns a \code{glm} object.
 }
 \description{
+  Functions to prepare principle component models for
+  colocalisation testing
+}
+\details{
   Prepares models of response based on principal components
   of two datasets for colocalisation testing.
 }
