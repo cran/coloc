@@ -3,7 +3,7 @@ Type: Package
 Depends: methods, MASS, BMA
 Suggests: ggplot2, snpStats
 Title: Colocalisation tests of two genetic traits
-Version: 2.1
+Version: 2.2
 Date: 2013-05-22
 Authors@R: c(person("Chris", "Wallace", role=c("aut","cre"), email =
         "chris.wallace@cimr.cam.ac.uk"),
@@ -21,8 +21,7 @@ License: GPL
 LazyLoad: yes
 Collate: 'AllClasses.R' 'bma.R' 'coloc-package.R' 'coloc.combine.R'
         'coloc.test.R' 'pcs.R' 'private.R' 'claudia.R'
-        'coloc.abf.imputed.R'
-Packaged: 2013-06-03 13:25:18 UTC; chrisw
+Packaged: 2013-06-19 09:11:30 UTC; chrisw
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-06-03 15:36:59
+Date/Publication: 2013-06-19 12:33:11

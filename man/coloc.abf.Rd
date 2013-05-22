@@ -1,30 +1,50 @@
 \name{coloc.abf}
 \alias{coloc.abf}
-\title{Fully Bayesian colocalisation analysis using p values}
+\title{Fully Bayesian colocalisation analysis using Bayes Factors}
 \usage{
-  coloc.abf(pvalues.dataset1, pvalues.dataset2, MAF,
-    N.dataset1, N.dataset2, type.dataset1 = "quant",
-    type.dataset2 = "quant", p1 = 1e-04, p2 = 1e-04,
-    p12 = 1e-05, s.dataset1 = 0.5, s.dataset2 = 0.5)
+  coloc.abf(dataset1, dataset2, MAF = NULL, p1 = 1e-04,
+    p2 = 1e-04, p12 = 1e-05)
 }
 \arguments{
-  \item{pvalues.dataset1}{single variant P-values in
-  dataset 1}
+  \item{dataset1}{a list with the following elements
+  \describe{
 
-  \item{pvalues.dataset2}{single variant P-values in
-  dataset 2}
+  \item{pvalues}{P-values for each SNP in dataset 1}
+
+  \item{N}{Number of samples in dataset 1}
 
   \item{MAF}{minor allele frequency of the variants}
 
-  \item{N.dataset1}{number of individuals in dataset 1}
+  \item{beta}{regression coefficient for each SNP from
+  dataset 1}
 
-  \item{N.dataset2}{number of individuals in dataset 2}
+  \item{varbeta}{variance of beta}
 
-  \item{type.dataset1}{the type of data in dataset 1 -
-  either "quant" or "cc" to denote quantitative or
-  case-control}
+  \item{type}{the type of data in dataset 1 - either
+  "quant" or "cc" to denote quantitative or case-control}
 
-  \item{type.dataset2}{the type of data in dataset 2}
+  \item{s}{the proportion of samples in dataset 1 that are
+  cases (only relevant for case control samples)}
+
+  \item{snp}{a character vector of snp ids, optional. If
+  present, it will be used to merge dataset1 and dataset2.
+  Otherwise, the function assumes dataset1 and dataset2
+  contain results for the same SNPs in the same order.}
+
+  }
+
+  Some of these items may be missing, but you must give
+  \code{type} and then either \code{pvalues}, \code{N} and
+  \code{s} (if type="cc") or \code{beta} and
+  \code{varbeta}.  If you use pvalues, then the function
+  needs to know minor allele frequencies, and will either
+  use the MAF given here or a global estimate of MAF
+  supplied separately.}
+
+  \item{dataset2}{as above, for dataset 2}
+
+  \item{MAF}{Common minor allele frequency vector to be
+  used for both dataset1 and dataset2}
 
   \item{p1}{prior probability a SNP is associated with
   trait 1}
@@ -34,12 +54,6 @@
 
   \item{p12}{prior probability a SNP is associated with
   both traits}
-
-  \item{s.dataset1}{the proportion of samples in dataset 1
-  that are cases (only relevant for case control samples)}
-
-  \item{s.dataset2}{the proportion of samples in dataset 2
-  that are cases}
 }
 \value{
   a list of two \code{data.frame}s: \itemize{ \item results
@@ -51,21 +65,18 @@
   annotated version of the input \code{data.frame} }
 }
 \description{
-  Bayesian colocalisation analysis using summary p values
+  Bayesian colocalisation analysis
 }
 \details{
-  This function makes a data frame obtained by merging
-  p-values for two traits over the same set of SNPs and
-  calculates posterior probabilities of different causal
-  variant configurations under the assumption of a single
-  causal variant for each trait.
+  This function calculates posterior probabilities of
+  different causal variant configurations under the
+  assumption of a single causal variant for each trait.
 
-  It uses an approximation to calculate Bayes factors for
-  association at each SNP that depends on the SNP's MAF and
-  ignores any uncertainty in imputation, and is therefore
-  better suited to well imputed SNPs.
-  \code{\link{coloc.abf.imputed}} is preferred when
-  regression coefficients and their standard errors are
+  If regression coefficients and variances are available,
+  it calculates Bayes factors for association at each SNP.
+  If only p values are available, it uses an approximation
+  that depends on the SNP's MAF and ignores any uncertainty
+  in imputation.  Regression coefficients should be used if
   available.
 }
 \author{

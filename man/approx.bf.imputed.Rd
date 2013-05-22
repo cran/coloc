@@ -2,7 +2,7 @@
 \alias{approx.bf.imputed}
 \title{Internal function, approx.bf.imputed}
 \usage{
-  approx.bf.imputed(z, V, type, suffix)
+  approx.bf.imputed(z, V, type, suffix = NULL)
 }
 \arguments{
   \item{z}{normal deviate associated with regression

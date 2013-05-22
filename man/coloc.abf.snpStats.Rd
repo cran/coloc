@@ -3,7 +3,9 @@
 \title{Bayesian colocalisation analysis using snpStats objects}
 \usage{
   coloc.abf.snpStats(X1, X2, Y1, Y2,
-    snps = intersect(colnames(X1), colnames(X2)), ...)
+    snps = intersect(colnames(X1), colnames(X2)),
+    type1 = c("quant", "cc"), type2 = c("quant", "cc"),
+    s1 = NA, s2 = NA, ...)
 }
 \arguments{
   \item{X1}{genetic data for dataset 1}
@@ -15,6 +17,16 @@
   \item{Y2}{response for dataset 2}
 
   \item{snps}{optional subset of snps to use}
+
+  \item{type1}{type of data in Y1, "quant" or "cc"}
+
+  \item{type2}{type of data in Y2, "quant" or "cc"}
+
+  \item{s1}{the proportion of samples in dataset 1 that are
+  cases (only relevant for case control samples)}
+
+  \item{s2}{the proportion of samples in dataset 2 that are
+  cases (only relevant for case control samples)}
 
   \item{...}{parameters passed to \code{\link{coloc.abf}}}
 }

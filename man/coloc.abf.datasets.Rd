@@ -18,7 +18,8 @@
 
   \item{response2}{col.name for response in dataset 2}
 
-  \item{...}{parameters passed to \code{\link{coloc.abf}}}
+  \item{...}{parameters passed to
+  \code{\link{coloc.abf.snpStats}}}
 }
 \value{
   output of \code{\link{coloc.abf}}

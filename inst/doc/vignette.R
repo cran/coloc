@@ -95,7 +95,7 @@ bf(ct.bma)
 
 
 ###################################################
-### code chunk number 7: vignette.Rnw:266-277
+### code chunk number 7: vignette.Rnw:283-294
 ###################################################
 library(snpStats)
 
@@ -111,19 +111,18 @@ maf <- col.summary(X2)[,"MAF"]
 
 
 ###################################################
-### code chunk number 8: vignette.Rnw:284-290
+### code chunk number 8: vignette.Rnw:301-305
 ###################################################
-my.res <- coloc.abf(pvalues.dataset1=p1,
-                    pvalues.dataset2=p2,
-                    MAF=maf, 
-                    N.dataset1=nrow(X1), 
-                    N.dataset2=nrow(X2))
+my.res <- coloc.abf(dataset1=list(pvalues=p1,N=nrow(X1),type="quant"),
+                    dataset2=list(pvalues=p2,N=nrow(X2),type="quant"),
+                    MAF=maf)
 print(my.res[[1]])
 
 
 ###################################################
-### code chunk number 9: vignette.Rnw:298-299
+### code chunk number 9: vignette.Rnw:313-315
 ###################################################
-ct.abf <- coloc.abf.datasets(data@df1, data@df2, response1="Y", response2="Y")
+ct.abf <- coloc.abf.datasets(data@df1, data@df2, response1="Y", response2="Y",
+                             type1="quant", type2="quant")
 
 
