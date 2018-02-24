@@ -53,9 +53,11 @@ fillin <- function(X,bp=1:ncol(X),strata=NULL) {
 #' \code{pcs.model} can then be invoked to create \code{glm} objects.
 #'
 #'@aliases pcs.prepare
-#'@param X1,X2 Each is either a SnpMatrix or numeric matrix of genetic data.
+#' @param X1 Either a SnpMatrix or numeric matrix of genetic data.
 #'Columns index SNPs, rows index samples.
-#'@return a \code{colocPCs} object.
+#' @param X2 as X1
+#' @param impute if TRUE (default), impute missing genotypes
+#' @return a \code{colocPCs} object.
 #'
 #'@author Chris Wallace
 #'@references Wallace et al (2012).  Statistical colocalisation of monocyte
@@ -92,25 +94,27 @@ fillin <- function(X,bp=1:ncol(X),strata=NULL) {
 #'  coloc.test(m1,m2,plot.coeff=FALSE,bayes=FALSE)
 #'
 #'@export
-pcs.prepare <- function(X1, X2) {
+pcs.prepare <- function(X1, X2, impute=TRUE) {
   snps.common <- intersect(colnames(X1),colnames(X2))
   if(length(snps.common)<2)
     stop("require at least 2 SNPs in common between objects X1, X2")
   if(!identical(class(X1),class(X2)))
     stop("require X1 and X2 to be of same class")
+    X1 <- X1[,snps.common]
+    X2 <- X2[,snps.common]
   if(is(X1,"SnpMatrix")) {
-    if(any(X1==as.raw("0"))) {
+    if(any(X1==as.raw("0")) & impute) {
       X1 <- fillin(X1)
-    } else {
-      X1 <- as(X1,"numeric")
-    }
+     } else {
+       X1 <- as(X1,"numeric")
+     }
   }
   if(is(X2,"SnpMatrix")) {
-    if(any(X2==as.raw("0"))) {
+     if(any(X2==as.raw("0")) & impute) {
       X2 <- fillin(X2)
     } else {
-      X2 <- as(X2,"numeric")
-    }
+       X2 <- as(X2,"numeric")
+     }
   }
   X <- rbind(X1,X2)
   rows.drop <- apply(is.na(X),1,any)
@@ -138,6 +142,7 @@ pcs.prepare <- function(X1, X2) {
 #'principal components matrix
 #'@param Y Numeric phenotype vector, length equal to the number of samples from
 #'the requested group
+#' @param stratum optional vector that gives stratum information
 #'@param threshold The minimum number of principal components which captures at
 #'least threshold proportion of the variance will be selected.  Simulations
 #'suggest \code{threshold=0.8} is a good default value.
@@ -176,11 +181,16 @@ pcs.prepare <- function(X1, X2) {
 #'  m1 <- pcs.model(pcs, group=1, Y=Y1)
 #'  m2 <- pcs.model(pcs, group=2, Y=Y2)
 #'
+#'  ## Alternatively, if one (or both) datasets have a known stratification, here simulated as
+#'  S <- rbinom(500,1,0.5)
+#'  ## specify this in pcs.model as
+#'  m1 <- pcs.model(pcs, group=1, Y=Y1, stratum=S)
+#'
 #'  ## test colocalisation using PCs
 #'  coloc.test(m1,m2,plot.coeff=FALSE,bayes=FALSE)
 #'
 #'@export
-pcs.model <- function(object, group, Y, threshold=0.8, family=if(all(Y %in% c(0,1))) {"binomial"} else {"gaussian"}) {
+pcs.model <- function(object, group, Y, stratum=NULL, threshold=0.8, family=if(all(Y %in% c(0,1))) {"binomial"} else {"gaussian"}) {
   if(length(object@vars)<2)
     stop("require 2 or more principal components to test for proportionality")
   npc <- which(object@vars>threshold)[1]
@@ -189,17 +199,24 @@ pcs.model <- function(object, group, Y, threshold=0.8, family=if(all(Y %in% c(0,
   cat("selecting",npc,"components out of",ncol(object@pcs),"to capture",object@vars[npc],"of total variance.\n")
   X <- object@pcs[ object@group[object@use]==group, 1:npc ]
   Y <- Y[ object@use[ object@group==group ] ]
+  lhs <- "Y ~ "
+  if(!is.null(stratum)) {
+      if(length(stratum)!=length(Y))
+          stop("stratum must match Y in length")
+      S <- stratum[ object@use[ object@group==group ] ]
+      lhs <- "Y ~ S + "
+  }
   if(nrow(X) != length(Y))
     stop("length of Y not equal to the number of rows from group",group,"\n")
   snps <- colnames(object@pcs)[1:npc]
-  f <- as.formula(paste("Y ~", paste(snps,collapse="+")))
+  f <- as.formula(paste(lhs, paste(snps,collapse="+")))
   data <-  as.data.frame(cbind(Y,X))
   m <- glm(f,data=data,family=family)
   while(any(is.na(coefficients(m)))) {
     drop <- which((is.na(coefficients(m)))[-1])
     cat("dropping",length(drop),"colinear PCs",snps[drop],"\n")
     snps <- snps[-drop]
-    f <- as.formula(paste("Y ~", paste(snps,collapse="+")))
+    f <- as.formula(paste(lhs, paste(snps,collapse="+")))
     m <- glm(f,data=data,family=family)
   }
   return(m)  

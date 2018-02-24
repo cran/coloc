@@ -1,47 +1,47 @@
 credible.interval <- function(post, interval, n.approx, level.ci=0.95) {
-  if(is.function(post)) {
-    ## minimum, so that we can reset theta.min, theta.max and centre on the mode
-    minimum <- optimize(post, interval)
-    t.min <- minimum$minimum
-    t.max <- minimum$minimum + pi
-    t.seq <- seq(t.min, t.max, length=n.approx)
-    pval <- post(t.seq)
-#    tpost <- function(theta) theta*post(theta)
-#    t.mean <- integrate(tpost,lower=interval[1], upper=interval[2])$value
-  #  epost <- function(theta) tan(theta)*post(theta)
-#    e.mean <- integrate(epost,lower=interval[1], upper=interval[2])$value
-#    e.mean <- tan(t.mean)
-  } else {
-    t.seq <- seq(interval[1],interval[2],length=n.approx)
-    minimum <- which.min(post)
-    t.min <- t.seq[minimum]
-    t.max <- t.min + pi
-    t.seq <- seq(t.min, t.max, length=n.approx)
-    pval <- post[c(minimum:n.approx,1:(minimum - 1))]
-#    e.mean <- tan(sum(pval * t.seq)/sum(pval))
-  }    
-  pval <- pval/sum(pval)
-  
-  ## search
-  centre <- which.max(pval)
-  t.mode <- t.seq[centre]
-  v <- pval[centre-1]
-  l <- which.min(abs(pval[1:(centre+1)] - v))
-  u <- which.min(abs(pval[(centre+1):n.approx] - v)) + centre
-  while(sum(pval[l:u])<level.ci) { # go down in twenties
-    cat(".")
-    v <- max(pval[l-20], pval[u+20])
+    if(is.function(post)) {
+        ## minimum, so that we can reset theta.min, theta.max and centre on the mode
+        minimum <- optimize(post, interval)
+        t.min <- minimum$minimum
+        t.max <- minimum$minimum + pi
+        t.seq <- seq(t.min, t.max, length=n.approx)
+        pval <- post(t.seq)
+                                        #    tpost <- function(theta) theta*post(theta)
+                                        #    t.mean <- integrate(tpost,lower=interval[1], upper=interval[2])$value
+                                        #  epost <- function(theta) tan(theta)*post(theta)
+                                        #    e.mean <- integrate(epost,lower=interval[1], upper=interval[2])$value
+                                        #    e.mean <- tan(t.mean)
+    } else {
+        t.seq <- seq(interval[1],interval[2],length=n.approx)
+        minimum <- which.min(post)
+        t.min <- t.seq[minimum]
+        t.max <- t.min + pi
+        t.seq <- seq(t.min, t.max, length=n.approx)
+        pval <- post[c(minimum:n.approx,1:(minimum - 1))]
+                                        #    e.mean <- tan(sum(pval * t.seq)/sum(pval))
+    }    
+    pval <- pval/sum(pval)
+    
+    ## search
+    centre <- which.max(pval)
+    t.mode <- t.seq[centre]
+    v <- pval[centre-1]
     l <- which.min(abs(pval[1:(centre+1)] - v))
     u <- which.min(abs(pval[(centre+1):n.approx] - v)) + centre
-  }
-  while(sum(pval[l:u])>level.ci) { # go up in ones
-    cat(".")
-    v <- min(pval[l+1], pval[u-1])
-    l <- which.min(abs(pval[1:(centre+1)] - v))
-    u <- which.min(abs(pval[(centre+1):n.approx] - v)) + centre
-  }
+    while(sum(pval[l:u])<level.ci) { # go down in twenties
+        cat(".")
+        v <- max(pval[l-20], pval[u+20])
+        l <- which.min(abs(pval[1:(centre+1)] - v))
+        u <- which.min(abs(pval[(centre+1):n.approx] - v)) + centre
+    }
+    while(sum(pval[l:u])>level.ci) { # go up in ones
+        cat(".")
+        v <- min(pval[l+1], pval[u-1])
+        l <- which.min(abs(pval[1:(centre+1)] - v))
+        u <- which.min(abs(pval[(centre+1):n.approx] - v)) + centre
+    }
 
-  return(list(#eta.mean=e.mean, #tan(t.mean %% pi),
+    return(list(#eta.mean=e.mean, #tan(t.mean %% pi),
               eta.mode=tan(t.mode), 
               lower=tan(t.seq[l]), upper=tan(t.seq[u]), level=level.ci,
               level.observed=if(is.function(post)) {
@@ -92,8 +92,7 @@ credible.interval <- function(post, interval, n.approx, level.ci=0.95) {
 ##' \code{QTLMatch v0.8} which now appears unavailable.  The numerically
 ##' identical test, extended to allow for more than two SNPs, can be found in
 ##' this package by looking at the chisquare statistic and the degrees of freedom
-##' given by \code{chisquare()} and \code{df()} respectively.  %
-##' \url{http://www-gene.cimr.cam.ac.uk/vplagnol/software.shtml}
+##' given by \code{chisquare()} and \code{df()} respectively.  
 ##' @author Chris Wallace
 ##' @references Wallace et al (2012).  Statistical colocalisation of monocyte
 ##' gene expression and genetic risk variants for type 1 diabetes.  Hum Mol Genet
@@ -126,9 +125,10 @@ credible.interval <- function(post, interval, n.approx, level.ci=0.95) {
 ##'   ## test whether the traits are compatible with colocalisation
 ##'   ### ppp should be large (>0.05, for example), indicating that they are.
 ##'   par(mfrow=c(2,2))
-##'   coloc.test(lm1,lm2,plot.coeff=TRUE,
+##'   obj <- coloc.test(lm1,lm2,
 ##'              plots.extra=list(x=c("eta","theta"),
 ##'                               y=c("lhood","lhood")))
+##'   plot(obj)
 ##' 
 ##' @export
 coloc.test <- function(X,Y,vars.drop=NULL, ...) {
@@ -180,7 +180,7 @@ coloc.test <- function(X,Y,vars.drop=NULL, ...) {
 ##' @param k Theta has a Cauchy(0,k) prior.  The default, k=1, is equivalent to a
 ##' uniform (uninformative) prior.  We have found varying k to have little effect
 ##' on the results.
-##' @param plot.coeff \code{TRUE} if you want to generate a plot showing the
+##' @param plot.coeff DEPRECATED.  Please \code{plot()} returned object instead. \code{TRUE} if you want to generate a plot showing the
 ##' coefficients from the two regressions together with confidence regions.
 ##' @param bma parameter set to \code{TRUE} when \code{coloc.test} is called by \code{coloc.bma}.  DO NOT SET THIS WHEN CALLING \code{coloc.test} DIRECTLY!
 ##' @param plots.extra list with 2 named elements, x and y, equal length
@@ -201,7 +201,7 @@ coloc.test <- function(X,Y,vars.drop=NULL, ...) {
 ##' @param level.ci,n.approx \code{level.ci} denotes the required level of the
 ##' credible interval for \code{eta}.  This is calculated numerically by
 ##' approximating the posterior distribution at \code{n.approx} distinct values.
-coloc.test.summary <- function(b1,b2,V1,V2,k=1,plot.coeff=TRUE,plots.extra=NULL,bayes=!is.null(bayes.factor),
+coloc.test.summary <- function(b1,b2,V1,V2,k=1,plot.coeff=FALSE,plots.extra=NULL,bayes=!is.null(bayes.factor),
                                n.approx=1001, level.ci=0.95,
                                bayes.factor=NULL, bma=FALSE) {
   nsnps <- length(b1)
@@ -233,7 +233,7 @@ coloc.test.summary <- function(b1,b2,V1,V2,k=1,plot.coeff=TRUE,plots.extra=NULL,
 ################################################################################
   
   ## Bayesian inference
-  
+ ppp <- NULL ; cred.int <- list()
   if(bayes) {
     ## cauchy prior for theta
     prior <- function(theta) { tt <- tan(theta);
@@ -260,7 +260,7 @@ coloc.test.summary <- function(b1,b2,V1,V2,k=1,plot.coeff=TRUE,plots.extra=NULL,
     pval <- Vectorize(pv,"theta")
     toint <- function(theta) { pval(theta) * post(theta) }
     ppp <- integrate(toint,lower=theta.min,upper=theta.max)
-    
+
     if(bma) {
       ## numeric approx of lhood for BMA
       theta.bma <- seq(0,pi,length=n.approx)
@@ -295,12 +295,12 @@ coloc.test.summary <- function(b1,b2,V1,V2,k=1,plot.coeff=TRUE,plots.extra=NULL,
                                     level.ci=level.ci)
     }
   }
-  
 ################################################################################
     
   ## plots
   if(plot.coeff) {
-    coeff.plot(b1,b2,diag(V1),diag(V2),eta=eta.hat,
+      message("Plots generated directly are deprecated.  Please plot returned object instead.")
+      coeff.plot(b1,b2,diag(V1),diag(V2),eta=eta.hat,
                main="Coefficients",
                                         #         sub=paste("ppp =",format.pval(ppp$value,digits=2),"p =",format.pval(pchisq(X2,df=nsnps-1,lower.tail=FALSE),digits=2)),
                xlab=expression(b[1]),ylab=expression(b[2]))
@@ -323,12 +323,14 @@ coloc.test.summary <- function(b1,b2,V1,V2,k=1,plot.coeff=TRUE,plots.extra=NULL,
     if(!bayes) {
       return(new("coloc",
                  result=c(eta.hat=eta.hat,chisquare=X2,n=nsnps),
-                 method="single"))
+                 method="single",
+                 plot.data=list(coef1=b1,coef2=b2,var1=diag(V1),var2=diag(V2))))
     } else {
       if(!bma) {
-        return(new("colocBayes",
+return(new("colocBayes",
                    result=c(eta.hat=eta.hat,chisquare=X2,n=nsnps),
                    method="single",
+                 plot.data=list(coef1=b1,coef2=b2,var1=diag(V1),var2=diag(V2)),
                    ppp=ppp$value,
                    credible.interval=cred.int,
                    bayes.factor=post.bf))
@@ -336,6 +338,162 @@ coloc.test.summary <- function(b1,b2,V1,V2,k=1,plot.coeff=TRUE,plots.extra=NULL,
         return(new("colocBayesBMA",
                    result=c(eta.hat=eta.hat,chisquare=X2,n=nsnps),
                    method="single",
+                 plot.data=list(coef1=b1,coef2=b2,var1=diag(V1),var2=diag(V2)),
+                   ppp=ppp$value,
+                   bma=post.bma,
+                   bayes.factor=post.bf))
+      }
+    }  
+}
+
+
+  
+
+
+faster.coloc.test.summary <- function(b1,b2,V1,V2,k=1,plot.coeff=FALSE,plots.extra=NULL,bayes=!is.null(bayes.factor),
+                               n.approx=1001, level.ci=0.95,
+                               bayes.factor=NULL, bma=FALSE) {
+  nsnps <- length(b1)
+  S1 <- solve(V1)
+  S2 <- solve(V2)
+  theta.min <- 0
+  theta.max <- pi
+  
+  ## -2LL = Fieller's chisq
+  d <- function(theta,b1,b2) { sin(theta) * b1 - cos(theta) * b2 }
+  Vstar <- function(theta) { sin(theta)^2 * V1 + cos(theta)^2 * V2 }
+  chisq <- function(theta,b1,b2) { t(d(theta,b1,b2)) %*% solve(Vstar(theta)) %*% d(theta,b1,b2) }
+  chisqV <- Vectorize(chisq, "theta")
+  
+  findmin <- function(b1,b2) {
+    ## there are at most two minima, and never both on the same side of pi/2
+    o.left <- optimize(chisq,interval=c(0,pi/2),b1=b1,b2=b2)
+    o.right <- optimize(chisq,interval=c(pi/2,pi),b1=b1,b2=b2)
+    if(o.left$objective < o.right$objective) {
+      return(o.left)
+    } else {
+      return(o.right)
+    }
+  }
+  fm <- findmin(b1,b2)
+  theta.hat <- fm$minimum; eta.hat=tan(theta.hat)
+  X2 <- fm$objective[1,1]
+  
+################################################################################
+  
+  ## Bayesian inference
+  ppp <- NULL ; cred.int <- list()
+  if(bayes) {
+      ## cauchy prior for theta
+      prior <- function(theta) { tt <- tan(theta);
+                                 k*(1+tt^2) / (2*pi*(1 + k^2 * tt^2)) }
+      priorV <- Vectorize(prior,"theta")
+      
+      ## posterior for theta
+      p <- length(b1)
+      const <- ( sqrt(2*pi)^p * det(V1) * det(V2) )^(-1)
+      M <- function(theta) { solve(cos(theta)^2 * S1 + sin(theta)^2 * S2) }
+      ## TODO t(b1) %*% S1 -> crossprod, and indep of theta?
+      bS1 <- crossprod(b1,S1)
+      bS2 <- crossprod(b2,S2)
+      mu <- function(theta) { t( (cos(theta) * bS1 + #t(b1) %*% S1 +
+                                  sin(theta) * bS2 #t(b2) %*% S2
+      ) %*% M(theta) ) }
+      L <- function(theta) {
+                                        #const * prior(theta) *
+          det(M(theta))^(-0.5) *
+          exp( -0.5 * (#t(b1) %*% S1 %*% b1 + t(b2) %*% S2 %*% b2 -
+              t(mu(theta)) %*% solve(M(theta)) %*% mu(theta)) )
+      }
+      LV <- Vectorize(L,"theta")
+      LV.int <- integrate(LV,lower=0,upper=pi)
+      post <- function(theta) { LV(theta) / LV.int$value }
+      
+      ##  posterior predictive p value
+      pv <- function(theta) { pchisq(chisq(theta,b1,b2),df=p,lower.tail=FALSE) }
+      pval <- Vectorize(pv,"theta")
+      toint <- function(theta) { pval(theta) * post(theta) }
+      ppp <- integrate(toint,lower=theta.min,upper=theta.max)
+
+      if(bma) {
+          ## numeric approx of lhood for BMA
+          theta.bma <- seq(0,pi,length=n.approx)
+          post.bma <- post(theta.bma)
+      }
+    
+    ## bayes factors
+    bf.calc <- function(eta) {
+      if(length(eta)==1)
+        return( LV(atan(eta))/priorV(atan(eta)) )      
+      if(length(eta)==2) {
+        theta.range <- sort(atan(eta))
+        return(integrate(LV,lower=theta.range[1],upper=theta.range[2])$value/
+               integrate(priorV,lower=theta.range[1], upper=theta.range[2])$value)
+      }
+      warning(paste("Cannot calculate Bayes Factor for eta =",eta,"require length == 1 or 2."))
+      return(NA)
+    }
+    
+    if(!is.null(bayes.factor)) {
+      if(length(bayes.factor)<2)
+        warning("You are trying to prepare to calculate Bayes Factors for a single value or interval for eta.  bayes.factor should have length at least two.")
+      post.bf <- sapply(bayes.factor, bf.calc)
+      names(post.bf) <- c(bayes.factor)
+    } else {
+      post.bf <- numeric(0)
+    }
+
+    ## credible interval - only if not doing bma
+    if(!bma) {
+      cred.int <- credible.interval(post, interval=c(theta.min, theta.max), n.approx=n.approx,
+                                    level.ci=level.ci)
+    }
+  }
+  
+################################################################################
+    
+  ## plots
+  if(plot.coeff) {
+      message("Plots generated directly are deprecated.  Please plot returned object instead.")
+      coeff.plot(b1,b2,diag(V1),diag(V2),eta=eta.hat,
+               main="Coefficients",
+                                        #         sub=paste("ppp =",format.pval(ppp$value,digits=2),"p =",format.pval(pchisq(X2,df=nsnps-1,lower.tail=FALSE),digits=2)),
+               xlab=expression(b[1]),ylab=expression(b[2]))
+  }
+
+  x <- seq(theta.min,theta.max,length=1001)
+
+  if(!is.null(plots.extra)) {
+    plot.data <- list(theta=x,
+                      eta=tan(x),
+                      chisq=chisqV(x,b1,b2),
+                      post.theta=if(bayes) { post(x) } else {rep(NA,length(x))},
+                      lhood=chisqV(x,b1,b2))
+    extra.plot(plot.data, plots.extra, theta.hat=theta.hat, eta.hat=eta.hat)   
+  }
+
+  ################################################################################
+  
+  ## return
+    if(!bayes) {
+      return(new("coloc",
+                 result=c(eta.hat=eta.hat,chisquare=X2,n=nsnps),
+                 method="single",
+                 plot.data=list(coef1=b1,coef2=b2,var1=diag(V1),var2=diag(V2))))
+    } else {
+      if(!bma) {
+return(new("colocBayes",
+                   result=c(eta.hat=eta.hat,chisquare=X2,n=nsnps),
+                   method="single",
+                 plot.data=list(coef1=b1,coef2=b2,var1=diag(V1),var2=diag(V2)),
+                   ppp=ppp$value,
+                   credible.interval=cred.int,
+                   bayes.factor=post.bf))
+      } else {
+        return(new("colocBayesBMA",
+                   result=c(eta.hat=eta.hat,chisquare=X2,n=nsnps),
+                   method="single",
+                 plot.data=list(coef1=b1,coef2=b2,var1=diag(V1),var2=diag(V2)),
                    ppp=ppp$value,
                    bma=post.bma,
                    bayes.factor=post.bf))
