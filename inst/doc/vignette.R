@@ -1,4 +1,4 @@
-## ----echo=FALSE----------------------------------------------------------
+## ----echo=TRUE-----------------------------------------------------------
 library(coloc)
 setClass("simdata",
          representation(df1="data.frame",df2="data.frame"))
@@ -36,7 +36,7 @@ sim.data <- function(nsnps=50,nsamples=200,causals=1:2,nsim=1) {
 ## simulate some data and load the coloc library
 set.seed(46411)
 data <- sim.data(nsamples=1000,nsim=1)
-library(coloc)
+library(coloc) 
 
 ## ------------------------------------------------------------------------
 if(requireNamespace("snpStats")) {
@@ -66,12 +66,12 @@ get.beta <- function(x) {
    return(list(beta=beta,varbeta=varbeta))
 }
 b1 <- get.beta(tests1)
-}
+} 
 
 ## ------------------------------------------------------------------------
 my.res <- finemap.abf(dataset=list(beta=b1$beta, varbeta=b1$varbeta, N=nrow(X1),sdY=sd(Y1),type="quant"))
 head(my.res)
-tail(my.res)
+tail(my.res) 
 
 ## ------------------------------------------------------------------------
 if(requireNamespace("snpStats")) {
@@ -118,44 +118,44 @@ get.beta <- function(x) {
 }
 b1 <- get.beta(tests1)
 b2 <- get.beta(tests2)
-}
+} 
 
 ## ------------------------------------------------------------------------
 my.res <- coloc.abf(dataset1=list(beta=b1$beta, varbeta=b1$varbeta, N=nrow(X1),sdY=sd(Y1),type="quant"),
                     dataset2=list(beta=b2$beta, varbeta=b2$varbeta, N=nrow(X2),sdY=sd(Y2),type="quant"),
                     MAF=maf)
-print(my.res[[1]])
+print(my.res[[1]]) 
 
 ## ------------------------------------------------------------------------
 my.res <- coloc.abf(dataset1=list(beta=b1$beta, varbeta=b1$varbeta, N=nrow(X1),type="quant"),
                     dataset2=list(beta=b2$beta, varbeta=b2$varbeta, N=nrow(X2),type="quant"),
                     MAF=maf)
-print(my.res[[1]])
+print(my.res[[1]]) 
 
 ## ------------------------------------------------------------------------
 my.res <- coloc.abf(dataset1=list(pvalues=p1,N=nrow(X1),type="quant"),
                     dataset2=list(pvalues=p2,N=nrow(X2),type="quant"),
                     MAF=maf)
-print(my.res[[1]])
+print(my.res[[1]]) 
 
 ## ------------------------------------------------------------------------
 ct.abf <- coloc.abf.datasets(data@df1, data@df2, response1="Y", response2="Y",
-                             type1="quant", type2="quant")
+                             type1="quant", type2="quant") 
 
 ## ----fig=TRUE------------------------------------------------------------
 ## run a coloc with pcs
 pcs <- pcs.prepare(data@df1[,-1], data@df2[,-1])
 pcs.1 <- pcs.model(pcs, group=1, Y=data@df1[,1], threshold=0.8)
 pcs.2 <- pcs.model(pcs, group=2, Y=data@df2[,1], threshold=0.8)
-ct.pcs <- coloc.test(pcs.1,pcs.2)
+ct.pcs <- coloc.test(pcs.1,pcs.2) 
 
 ## ------------------------------------------------------------------------
 ct.pcs
-str(summary(ct.pcs))
+str(summary(ct.pcs)) 
 
 ## ------------------------------------------------------------------------
 ct.pcs.bayes <- coloc.test(pcs.1,pcs.2, bayes=TRUE)
-ci(ct.pcs.bayes)
+ci(ct.pcs.bayes) 
 
 ## ------------------------------------------------------------------------
 ## compare individual values of eta
@@ -166,5 +166,5 @@ bf(ct.pcs)
 ct.bma <- coloc.bma(data@df1, data@df2, 
                     family1="gaussian", family2="gaussian",
                     bayes.factor=list(c(-0.1,1), c(0.9,1.1)))
-bf(ct.bma)
+bf(ct.bma) 
 
