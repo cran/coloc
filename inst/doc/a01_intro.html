@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Chris Wallace" />
+
+<meta name="date" content="2021-06-14" />
+
+<title>Coloc: a package for colocalisation analyses</title>
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Coloc: a package for colocalisation analyses</h1>
+<h4 class="author">Chris Wallace</h4>
+<h4 class="date">2021-06-14</h4>
+
+
+
+<p><a id="org63a948f"></a></p>
+<div id="a-brief-outline-of-colocalisation-analysis" class="section level1">
+<h1>A brief outline of colocalisation analysis</h1>
+<p>The coloc package can be used to perform genetic colocalisation analysis of two potentially related phenotypes, to ask whether they share common genetic causal variant(s) in a given region. There are a few key references which this vignette will not duplicate (see below).</p>
+<p>In brief, two approaches can be implemented. The proportional testing approach <sup><a id="fnr.1" class="footref" href="#fn.1">1</a></sup> <sup><a id="fnr.2" class="footref" href="#fn.2">2</a></sup> has now been moved to its own package, coloc.prop.</p>
+<p>This package implements the more population enumeration approach.</p>
+<p>You can read about how to prepare your data in <a href="a02_data.html">this vignette</a> or read the vignettes listed in one of the sections below to understand how coloc works.</p>
+<div id="a-single-causal-variant-assumption" class="section level2">
+<h2>A single causal variant assumption</h2>
+<p>Claudia Giambartolomei and Vincent Plagnol proposed the enumeration method, which makes use of Jon Wakefield’s work on determining approximate Bayes Factors from p values <sup><a id="fnr.3" class="footref" href="#fn.3">3</a></sup> to generate a colocalisation analysis <sup><a id="fnr.4" class="footref" href="#fn.4">4</a></sup>, implemented in the function <code>coloc.abf()</code>. By assuming there is at most one causal variant per trait, every possible configuration can be individually enumerated and evaluated, and aggregating over these allows us to gauge the relative support for models which support colocalisation to those that don’t.</p>
+<p>You can see more about the enumeration approach on <a href="https://haldanessieve.org/2013/05/21/our-paper-bayesian-test-for-co-localisation-between-pairs-of-genetic-association-studies-using-summary-statistics/">this blogpost</a>.</p>
+<p>See vignette: <a href="a03_enumeration.html">enumeration</a></p>
+</div>
+<div id="sensitivity-analysis" class="section level2">
+<h2>Sensitivity analysis</h2>
+<p>As a Bayesian method, coloc.abf() requires the user to specify prior probabilities of SSNP causality and colocalisation. Post-hoc sensitivity analysis can be used to assess whether results are robust across a range of plausible priors.</p>
+<p>See vignette: <a href="a04_sensitivity.html">sensitivity</a></p>
+</div>
+<div id="deprecated-relaxing-the-single-causal-variant-assumption-through-conditioning" class="section level2">
+<h2>Deprecated: relaxing the single causal variant assumption through conditioning</h2>
+<p>The single variant assumption can be relaxed through conditioning. We have implemented a conditioning step within coloc, which we hope will increase use of conditioning, and proposed an alternative, masking.</p>
+<p>See vignette: <a href="a05_conditioning.html">conditioning/masking</a></p>
+</div>
+<div id="an-improved-approach-to-relaxing-the-single-causal-variant-assumption-susie" class="section level2">
+<h2>An improved approach to relaxing the single causal variant assumption: SuSiE</h2>
+<p>The sum of single effects regression method proposed by Wang et al <sup><a id="fnr.6" class="footref" href="#fn.6">6</a></sup> can instead simultaneously decompose multiple signals from the marginal summary stats, and appears to work better than conditioning.</p>
+<p>See vignette: <a href="a06_SuSiE.html">SuSiE</a></p>
+</div>
+</div>
+<div id="footnotes" class="section level1">
+<h1>Footnotes</h1>
+<p><sup><a id="fn.1" href="#fnr.1">1</a></sup> <a href="https://pubmed.ncbi.nlm.nih.gov/19039033/" class="uri">https://pubmed.ncbi.nlm.nih.gov/19039033/</a></p>
+<p><sup><a id="fn.2" href="#fnr.2">2</a></sup> <a href="https://doi.org/10.1002/gepi.21765" class="uri">https://doi.org/10.1002/gepi.21765</a></p>
+<p><sup><a id="fn.3" href="#fnr.3">3</a></sup> <a href="https://pubmed.ncbi.nlm.nih.gov/18642345/" class="uri">https://pubmed.ncbi.nlm.nih.gov/18642345/</a></p>
+<p><sup><a id="fn.4" href="#fnr.4">4</a></sup> <a href="https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004383" class="uri">https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1004383</a></p>
+<p><sup><a id="fn.5" href="#fnr.5">5</a></sup> <a href="https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1005272" class="uri">https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1005272</a></p>
+<p><sup><a id="fn.5" href="#fnr.6">6</a></sup> <a href="https://rss.onlinelibrary.wiley.com/doi/10.1111/rssb.12388" class="uri">https://rss.onlinelibrary.wiley.com/doi/10.1111/rssb.12388</a></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

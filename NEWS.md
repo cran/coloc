@@ -1,10 +1,40 @@
+# coloc 5.1.0
+* release to CRAN of coloc.susie
+* remove nref now not recommended
+
+# coloc 5.0.0.9002
+* in runsusie, allow nref to be overridden if user passes z_ld_weight
+
+# coloc 5.0.0.9001
+* deprecate coloc.signals for multiple causal variants
+* introduce coloc.susie for multiple causal variants
+* new vignette 02_data giving more details on structuring your data properly
+
+# coloc 4.0-5
+* update error checking
+
+# coloc 4.0-3
+* BUGFIX
+- missing sdY for type="quant" would error in finemap.signals or coloc.signals, now it is estimated if missing.
+- warning for factors used as snp names added (issue #29)
+
+# coloc 4.0-2
+* BUGFIX
+- snps in the second dataset might not have been masked as intended. This would result in effect using the "single" option for trait 2 when masking was expected.
+
+# coloc 4.0-0
+*new functions: coloc.signals, finemap.abf*
+- analogues of coloc.abf and finemap.abf that allow for multiple causal variants.  See vignette on conditioning/masking
+*new function: sensitivity*
+- post-hoc, determine the sensitivity of coloc results to changes in the prior.  See vignette on sensitivity
+
+2019-06-25
+
 # coloc 3.2-1
 * BUGFIX: finemap.abf()
 - in low power situations, the posterior for H0 was previously too low.  This will only affect datasets where the minimum p value was > 1e-7 - ie where the posterior for H0 would be expected to be much above 0.
 
 # coloc 3.2 
-*new function: colocqq*
-- added colocqq for quantitative traits measured on the same individuals
 - fix bug in process.datasets which suggested MAF was needed for cc data when beta/varbeta also present
 - added pkgdown
 	

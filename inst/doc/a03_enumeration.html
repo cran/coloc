@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Chris Wallace" />
+
+<meta name="date" content="2021-06-14" />
+
+<title>Coloc: under a single causal variant assumption</title>
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Coloc: under a single causal variant assumption</h1>
+<h4 class="author">Chris Wallace</h4>
+<h4 class="date">2021-06-14</h4>
+
+
+
+<div id="fine-mapping-under-a-single-causal-variant-assumption" class="section level1">
+<h1>Fine mapping under a single causal variant assumption</h1>
+<p>The Approximate Bayes Factor colocalisation analysis described in the next section essentially works by fine mapping each trait under a single causal variant assumption and then integrating over those two posterior distributions to calculate probabilities that those variants are shared. Of course, this means we can look at each trait on its own quite simply, and we can do that with the function <code>finemap.abf</code>.</p>
+<p>First we load some simulated data. See <a href="a02_data.html">the data vignette</a> to understand how to format your datasets.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(coloc)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">data</span>(coloc_test_data)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">attach</span>(coloc_test_data)</a></code></pre></div>
+<pre><code>## The following objects are masked from coloc_test_data (pos = 3):
+## 
+##     D1, D2, D3, D4</code></pre>
+<p>Then we analyse the statistics from a single study, asking about the evidence that each SNP in turn is solely causal for any association signal we see. As we might expect, that evidence is maximised at the SNP with the smallest p value</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">plot_dataset</span>(D1)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">my.res &lt;-<span class="st"> </span><span class="kw">finemap.abf</span>(<span class="dt">dataset=</span>D1)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">my.res[<span class="dv">21</span><span class="op">:</span><span class="dv">30</span>,]</a></code></pre></div>
+<pre><code>##              V.       z.        r.       lABF. snp position prior       SNP.PP
+## s21 0.013574490 2.210771 0.6760490  1.08851608 s21       21 1e-04 6.993866e-06
+## s22 0.022519401 2.832099 0.5571217  1.82704569 s22       22 1e-04 1.463715e-05
+## s23 0.013008412 2.381939 0.6853070  1.36601147 s23       23 1e-04 9.230645e-06
+## s24 0.024858631 3.177590 0.5326188  2.30864180 s24       24 1e-04 2.369252e-05
+## s25 0.005031597 1.470717 0.8491729 -0.02742696 s25       25 1e-04 2.291234e-06
+## s26 0.027329180 3.027380 0.5089767  1.97676103 s26       26 1e-04 1.700111e-05
+## s27 0.029092316 2.833849 0.4933483  1.64100022 s27       27 1e-04 1.215229e-05
+## s28 0.012057181 2.079938 0.7014486  0.91287665 s28       28 1e-04 5.867297e-06
+## s29 0.009216961 1.496951 0.7545115  0.14312596 s29       29 1e-04 2.717313e-06
+## s30 0.007073637 1.725572 0.8001914  0.38612656 s30       30 1e-04 3.464762e-06</code></pre>
+<p>The <code>SNP.PP</code> column shows the posterior probability that exactly that SNP is causal. Note the last line in this data.frame does not correspond to a SNP, but to the null model, that no SNP is causal.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">tail</span>(my.res,<span class="dv">3</span>)</a></code></pre></div>
+<p>Finally, if you do have full genotype data as here, while this is a fast method for fine mapping, it can be sensible to consider multiple causal variant models too. One package that allows you to do this is <a href="https://github.com/chr1swallace/GUESSFM">GUESSFM</a>, described in<sup><a id="fnr.5" class="footref" href="#fn.5">5</a></sup></p>
+<p><a id="org6973f37"></a></p>
+</div>
+<div id="approximate-bayes-factor-colocalisation-analyses" class="section level1">
+<h1>(Approximate) Bayes Factor colocalisation analyses</h1>
+<p><a id="org192e16b"></a></p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The idea behind the ABF analysis is that the association of each trait with SNPs in a region may be summarised by a vector of 0s and at most a single 1, with the 1 indicating the causal SNP (so, assuming a single causal SNP for each trait). The posterior probability of each possible configuration can be calculated and so, crucially, can the posterior probabilities that the traits share their configurations. This allows us to estimate the support for the following cases:</p>
+<ul>
+<li><span class="math inline">\(H_0\)</span>: neither trait has a genetic association in the region</li>
+<li><span class="math inline">\(H_1\)</span>: only trait 1 has a genetic association in the region</li>
+<li><span class="math inline">\(H_2\)</span>: only trait 2 has a genetic association in the region</li>
+<li><span class="math inline">\(H_3\)</span>: both traits are associated, but with different causal variants</li>
+<li><span class="math inline">\(H_4\)</span>: both traits are associated and share a single causal variant</li>
+</ul>
+<p><a id="orgb0fa807"></a></p>
+</div>
+<div id="the-basic-coloc.abf-function" class="section level2">
+<h2>The basic <code>coloc.abf</code> function</h2>
+<p>The function <code>coloc.abf</code> is ideally suited to the case when only summary data are available.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">my.res &lt;-<span class="st"> </span><span class="kw">coloc.abf</span>(<span class="dt">dataset1=</span>D1,</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">                    <span class="dt">dataset2=</span>D2)</a></code></pre></div>
+<pre><code>## PP.H0.abf PP.H1.abf PP.H2.abf PP.H3.abf PP.H4.abf 
+##  1.73e-08  7.16e-07  2.61e-05  8.20e-05  1.00e+00 
+## [1] &quot;PP abf for shared variant: 100%&quot;</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">print</span>(my.res) </a></code></pre></div>
+<pre><code>## Coloc analysis of trait 1, trait 2</code></pre>
+<pre><code>## 
+## SNP Priors</code></pre>
+<pre><code>##    p1    p2   p12 
+## 1e-04 1e-04 1e-05</code></pre>
+<pre><code>## 
+## Hypothesis Priors</code></pre>
+<pre><code>##         H0    H1    H2       H3    H4
+##  0.9894755 0.005 0.005 2.45e-05 5e-04</code></pre>
+<pre><code>## 
+## Posterior</code></pre>
+<pre><code>##        nsnps           H0           H1           H2           H3           H4 
+## 5.000000e+01 1.725901e-08 7.157108e-07 2.608839e-05 8.196399e-05 9.998912e-01</code></pre>
+<p>Note that if you do find strong evidence for H4, we can extract the posterior probabilities for each SNP to be causal <em>conditional on H4 being true</em>. This is part of the calculation required by coloc, and contained in the column SNP.PP.H4 in the “results” element of the returned list. So we can extract the more likely causal variants by</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">subset</span>(my.res<span class="op">$</span>results,SNP.PP.H4<span class="op">&gt;</span><span class="fl">0.01</span>)</a></code></pre></div>
+<pre><code>##    snp position       V.df1    z.df1     r.df1 lABF.df1       V.df2    z.df2
+## 34  s4        4 0.005910959 5.775391 0.8273637 12.92013 0.004828876 6.460469
+##        r.df2 lABF.df2 internal.sum.lABF SNP.PP.H4
+## 34 0.8318075 16.46752          29.38766 0.9999081</code></pre>
+<p>or the 95% credible set by</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">o &lt;-<span class="st"> </span><span class="kw">order</span>(my.res<span class="op">$</span>results<span class="op">$</span>SNP.PP.H4,<span class="dt">decreasing=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">cs &lt;-<span class="st"> </span><span class="kw">cumsum</span>(my.res<span class="op">$</span>results<span class="op">$</span>SNP.PP.H4[o])</a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">w &lt;-<span class="st"> </span><span class="kw">which</span>(cs <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.95</span>)[<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">my.res<span class="op">$</span>results[o,][<span class="dv">1</span><span class="op">:</span>w,]<span class="op">$</span>snp</a></code></pre></div>
+<pre><code>## [1] &quot;s4&quot;</code></pre>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
