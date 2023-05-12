@@ -43,14 +43,14 @@ manh.plot <- function(df,wh,
     znm <- if(wh==1) { "z.df1" } else {"z.df2" }
     ## print(znm)
     ## print(head(df))
-    p <- pnorm(abs(df[[znm]]),lower.tail=FALSE)*2
+    logp <- - ( pnorm(-abs(df[[znm]]),log.p=TRUE) + log(2) ) / log(10)
     ## mycol <- ifelse(A$snp %in% nCV, "red","black")
     Pal <- colorRampPalette(c('white','blue'))
 
     ##This adds a column of color values
     ## based on the y values
     Col <- Pal(100)[ceiling(100*df$SNP.PP.H4)]
-    plot(position,-log10(p),col="gray20",
+    plot(position,logp,col="gray20",
          bg = Col, # Fill colour
          pch = 21, # Shape: circles that can filed
          frame.plot = FALSE, # Remove the frame 
@@ -76,7 +76,7 @@ manh.plot <- function(df,wh,
 ##' @param npoints the number of points over which to evaluate the prior values for p12, equally spaced on a log scale between p1*p2 and min(p1,p2) - these are logical limits on p12, but not scientifically sensible values.
 ##' @param doplot draw the plot. set to FALSE if you want to just evaluate the prior and posterior matrices and work with them yourself
 ##' @param plot.manhattans if TRUE, show Manhattans of input data
-##' @param preserve.par if TRUE, do not change par() of current graphics device - this is to allow sensitivity plots to be incoporated into a larger set of plots, or to be plot one per page on a pdf, forexample
+##' @param preserve.par if TRUE, do not change par() of current graphics device - this is to allow sensitivity plots to be incoporated into a larger set of plots, or to be plot one per page on a pdf, for example
 ##' @param row when coloc.signals() has been used and multiple rows are returned in the coloc summary, which row to plot
 ##' @return list of 3: prior matrix, posterior matrix, and a pass/fail indicator (returned invisibly)
 ##' @export

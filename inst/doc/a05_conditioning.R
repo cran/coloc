@@ -27,11 +27,3 @@ res
 sensitivity(res,"H4 > 0.9",row=1)
 sensitivity(res,"H4 > 0.9",row=2)
 
-## ---- fig.width=8,fig.height=6------------------------------------------------
-finemap.signals(D3,method="mask")
-finemap.signals(D4,method="mask")
-resm=coloc.signals(D3,D4,method="mask",p12=1e-6,pthr=1e-6,r2thr=0.01)
-resm
-sensitivity(resm,"H4 > 0.9",row=1)
-sensitivity(resm,"H4 > 0.9",row=2)
-

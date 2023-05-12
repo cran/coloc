@@ -18,10 +18,10 @@ standard for SuSiE results, but may not be for BF constructed in other
 ways.}
 }
 \value{
-matrix of posterior probabilies, same dimensions as bf
+matrix of posterior probabilities, same dimensions as bf
 }
 \description{
-convert logbf matrix to PP matrix
+generic convenience function to convert logbf matrix to PP matrix
 }
 \author{
 Chris Wallace
