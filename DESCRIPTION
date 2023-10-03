@@ -4,8 +4,8 @@ Imports: data.table, ggplot2, methods, viridis, stats, grDevices,
         susieR (>= 0.12.06), utils
 Suggests: knitr, testthat, mvtnorm, magrittr, rmarkdown
 Title: Colocalisation Tests of Two Genetic Traits
-Version: 5.2.2
-Date: 2023-05-12
+Version: 5.2.3
+Date: 2023-09-22
 Authors@R: c(person("Chris", "Wallace", role=c("aut","cre"),
     email = "cew54@cam.ac.uk"),
     person("Claudia","Giambartolomei", role="aut",
@@ -29,9 +29,9 @@ Collate: 'coloc-package.R' 'boundaries.R' 'check.R' 'claudia.R'
         'testdata.R' 'zzz.R'
 Depends: R (>= 3.5)
 NeedsCompilation: no
-Packaged: 2023-05-12 10:53:43 UTC; chrisw
+Packaged: 2023-10-03 13:14:23 UTC; chrisw
 Author: Chris Wallace [aut, cre],
   Claudia Giambartolomei [aut],
   Vincent Plagnol [ctb]
 Repository: CRAN
-Date/Publication: 2023-05-12 22:40:02 UTC
+Date/Publication: 2023-10-03 14:30:02 UTC

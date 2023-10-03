@@ -12,7 +12,7 @@
 
 <meta name="author" content="Chris Wallace" />
 
-<meta name="date" content="2023-05-12" />
+<meta name="date" content="2023-10-03" />
 
 <title>Coloc: using SuSiE to relax the single causal variant assumption</title>
 
@@ -342,7 +342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Coloc: using SuSiE to relax the single
 causal variant assumption</h1>
 <h4 class="author">Chris Wallace</h4>
-<h4 class="date">2023-05-12</h4>
+<h4 class="date">2023-10-03</h4>
 
 
 
@@ -354,16 +354,16 @@ causal variant assumption</h1>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(coloc_test_data) <span class="do">## datasets D1, D2, D3 and D4</span></span></code></pre></div>
 <pre><code>## The following objects are masked from coloc_test_data (pos = 3):
 ## 
-##     D1, D2, D3, D4, causals</code></pre>
+##     causals, D1, D2, D3, D4</code></pre>
 <pre><code>## The following objects are masked from coloc_test_data (pos = 4):
 ## 
-##     D1, D2, D3, D4, causals</code></pre>
+##     causals, D1, D2, D3, D4</code></pre>
 <pre><code>## The following objects are masked from coloc_test_data (pos = 5):
 ## 
-##     D1, D2, D3, D4, causals</code></pre>
+##     causals, D1, D2, D3, D4</code></pre>
 <pre><code>## The following objects are masked from coloc_test_data (pos = 6):
 ## 
-##     D1, D2, D3, D4, causals</code></pre>
+##     causals, D1, D2, D3, D4</code></pre>
 <p>Datasets 3 and 4 are constructed to deliberately break the single
 causal variant assumption in <code>coloc.abf()</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
